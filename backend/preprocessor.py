@@ -1,6 +1,6 @@
 import json
 
-def summarize_sysmon(sysmon_file="backend/example_inputs/sysmon_log.json"):
+def summarize_sysmon(sysmon_file="sample_inputs/sysmon_log.json"):
     try:
         with open(sysmon_file) as f:
             logs = json.load(f)
@@ -12,7 +12,7 @@ def summarize_sysmon(sysmon_file="backend/example_inputs/sysmon_log.json"):
     except Exception as e:
         return f"Error reading Sysmon log: {str(e)}"
 
-def summarize_pcap(pcap_file="backend/example_inputs/pcap_summary.txt"):
+def summarize_pcap(pcap_file="sample_inputs/sample_pcap_summary.txt"):
     try:
         with open(pcap_file) as f:
             return f.read()

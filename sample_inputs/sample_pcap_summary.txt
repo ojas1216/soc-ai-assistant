@@ -1,0 +1,22 @@
+PCAP Summary — Captured 2024-01-15 03:12:00 UTC
+Interface: eth0 | Duration: 5 min | Packets: 1,847
+
+--- Top Conversations ---
+185.220.101.42:54321  <-> 192.168.1.10:22     TCP  SSH  47 pkts   BRUTE FORCE ATTEMPT
+185.220.101.42:54324  <-> 192.168.1.10:22     TCP  SSH  312 pkts  SESSION ESTABLISHED
+192.168.1.10:51200    <-> evil.c2domain.xyz:80 TCP  HTTP 28 pkts   SUSPICIOUS DOWNLOAD
+192.168.1.10:51444    <-> 185.220.101.42:4444  TCP  RAW  654 pkts  POSSIBLE C2 BEACON
+192.168.1.10:51800    <-> 185.220.101.42:8080  TCP  HTTP 91 pkts   DATA EXFILTRATION
+
+--- DNS Queries from 192.168.1.10 ---
+evil.c2domain.xyz  -> 185.220.101.42  (NXDOMAIN history: 0, TTL: 60s)
+update.legit-site.com -> 93.184.216.34
+
+--- HTTP Requests ---
+GET  http://evil.c2domain.xyz/payload.sh       200  12,884 bytes
+POST http://185.220.101.42:8080/exfil          200  4,096 bytes  (base64 payload)
+
+--- Flags ---
+[HIGH] Outbound beaconing pattern: 192.168.1.10 -> 185.220.101.42:4444 every ~60s
+[HIGH] Cleartext credential exposure in HTTP POST body
+[MED]  Short TTL DNS record for evil.c2domain.xyz (likely DGA or ephemeral C2)

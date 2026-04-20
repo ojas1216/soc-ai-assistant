@@ -1,189 +1,229 @@
-🛡️ SOC AI Assistant
+# SOC AI Assistant Pro
 
-⚠️ Security Notice (Read First)
+**Turns 4 hours of log correlation into 4 minutes. 100% offline. Air-gap safe.**
 
-Do not use any API keys committed in this repository.
-They are demo-only and may be rate-limited, revoked, or unsafe to rely on.
-Generate your own keys from the official providers and place them in your local .env.
-Instructions are below in “Generate Your Own API Keys”.
+> Give it one suspicious IP, a log file, or a PCAP summary.  
+> Get back a full kill chain reconstruction, MITRE ATT&CK mapping, and a 3-step containment plan — in a single PDF.
 
+[![Demo Video](https://img.shields.io/badge/Watch-Demo%20Video-red?logo=google-drive)](https://drive.google.com/file/d/1sH6hOsyFiEVD1jhPGRnBkK16AAegsiSj/view?usp=sharing)
+[![License](https://img.shields.io/badge/License-Commercial-blue)](#license)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python)](https://python.org)
+[![Offline](https://img.shields.io/badge/Mode-100%25%20Offline-green)](#)
 
+---
 
+## The Problem This Solves
 
-Watch the demo here:  
-[Demo: SOC AI Assistant](https://drive.google.com/file/d/1sH6hOsyFiEVD1jhPGRnBkK16AAegsiSj/view?usp=sharing)
+SOC teams lose 70% of their time switching between tools — checking logs in one window, PCAP in another, CVEs in a browser tab, MITRE ATT&CK in a fourth. By the time correlation happens, the attacker has moved laterally.
 
+SOC AI Assistant Pro collapses that entire workflow into one command.
 
+---
 
-An AI-powered Security Operations Center (SOC) Assistant that automates log preprocessing, threat intelligence enrichment, risk scoring, LLM-driven analysis, and report generation — helping SOC teams reduce alert fatigue and prioritize incidents faster.
+## Features
 
-✨ Features
+| Feature | Description |
+|---|---|
+| **Kill Chain Reconstruction** | Feed one IOC (IP / hash / CVE) → auto-pivot across logs + PCAP → full attack timeline |
+| **MITRE ATT&CK Mapping** | Automatic technique detection across all 14 kill chain stages |
+| **LLM Threat Analysis** | Local AI (Ollama) generates incident summaries and remediation — no cloud, no data leakage |
+| **Threat Intel Enrichment** | Optional AbuseIPDB, VirusTotal, NVD lookups (or run fully offline) |
+| **PDF + JSON Reports** | Executive-ready PDF with risk score, MITRE techniques, and 3-step remediation |
+| **Service Mode** | Watermarked reports + usage logging for MSPs and enterprise billing |
+| **Streamlit Web UI** | Browser-based upload and analysis interface |
+| **Air-gap Safe** | Core analysis runs with zero internet connectivity |
 
-🔍 Preprocessing: Normalize raw logs (JSON, TXT, PCAP summaries) for consistent downstream analysis.
+---
 
-🤖 LLM Analysis: Summaries, detections, and remediation suggestions via backend/llm_engine.py.
+## Requirements
 
-🌐 Threat Intel Enrichment: AbuseIPDB, VirusTotal, and NVD lookups via backend/threat_intel.py.
+| Requirement | Version | Notes |
+|---|---|---|
+| Python | 3.9+ | [python.org](https://python.org) |
+| Ollama | Latest | [ollama.com/download](https://ollama.com/download) |
+| LLM Model | — | Run `ollama pull mistral` after installing Ollama |
+| RAM | 8 GB min | 16 GB recommended for `llama3` |
 
-⚖️ Risk Scoring: Prioritize incidents using backend/risk_scorer.py.
+---
 
-📑 Report Generation: Structured incident reports using backend/report_generator.py.
+## Installation
 
-✅ Whitelisting: Suppress benign entities via backend/whitelist.yaml.
+### Option 1 — Automated (recommended)
 
-🖥 Simple UI: Streamlit app in frontend/app.py for uploads, analysis, and report downloads.
+**Linux / macOS:**
+```bash
+git clone https://github.com/ojas1216/soc-ai-assistant.git
+cd soc-ai-assistant
+bash installer.sh
+```
 
-🗂 Project Structure
-soc-ai-assistant/
-├─ backend/
-│  ├─ llm_engine.py
-│  ├─ preprocessor.py
-│  ├─ threat_intel.py
-│  ├─ risk_scorer.py
-│  ├─ report_generator.py
-│  ├─ whitelist.py
-│  ├─ whitelist.yaml
-│  └─ example_inputs/
-├─ frontend/
-│  └─ app.py
-├─ inputs/                # Sample logs for demo
-├─ requirements.txt
-├─ README.md
-└─ .env                   # Your local secrets (DO NOT COMMIT)
+**Windows:**
+```
+git clone https://github.com/ojas1216/soc-ai-assistant.git
+cd soc-ai-assistant
+installer.bat
+```
 
-⚙️ Installation
+### Option 2 — Manual
 
-Clone
-
+```bash
+# 1. Clone
 git clone https://github.com/ojas1216/soc-ai-assistant.git
 cd soc-ai-assistant
 
-
-Create a virtual environment (recommended)
-
+# 2. Create and activate virtual environment
 python -m venv .venv
+
 # Windows
 .venv\Scripts\activate
-# macOS/Linux
+
+# macOS / Linux
 source .venv/bin/activate
 
-
-Install dependencies
-
+# 3. Install dependencies
 pip install -r requirements.txt
 
+# 4. Pull the LLM model (requires Ollama running)
+ollama pull mistral
 
-Create a .env file (see next section for keys)
+# 5. Configure
+cp .env.example .env    # then edit .env with your API keys (optional)
+```
 
-LLM_MODEL=mistral
-ABUSEIPDB_API_KEY=your_abuseipdb_api_key_here
-VT_API_KEY=your_virustotal_api_key_here
-NVD_API_KEY=your_nvd_api_key_here
+---
 
-🔑 Generate Your Own API Keys (Required)
-1) AbuseIPDB
+## Configuration
 
-Site: https://www.abuseipdb.com/
+Edit `config.yaml` before first run:
 
-Steps: Sign up → Account Settings → API Key → copy it into ABUSEIPDB_API_KEY.
+```yaml
+llm:
+  model: "mistral"        # or llama3 for higher accuracy
 
-2) VirusTotal
+offline_mode: true        # set false to enable AbuseIPDB / VirusTotal enrichment
+```
 
-Site: https://www.virustotal.com/gui/join-us
+For threat intel enrichment, add your API keys to `.env`:
 
-Steps: Create account → User Profile → API Key → copy into VT_API_KEY.
+```env
+ABUSEIPDB_API_KEY=your_key_here
+VT_API_KEY=your_key_here
+NVD_API_KEY=your_key_here
+```
 
-3) NVD (National Vulnerability Database)
+Free keys: [AbuseIPDB](https://www.abuseipdb.com/) · [VirusTotal](https://www.virustotal.com/gui/join-us) · [NVD](https://nvd.nist.gov/developers/request-an-api-key)
 
-Site: https://nvd.nist.gov/developers/request-an-api-key
+---
 
-Steps: Request key → check email → copy into NVD_API_KEY.
+## Running the Tool
 
-💡 Tip: Never commit your personal keys. Keep .env local and listed in .gitignore.
+### CLI (recommended)
 
-▶️ Run the App
+```bash
+# Analyze a log file — outputs PDF report
+python soc_assist.py --log sample_inputs/high_risk.json
+
+# Full correlation: log + PCAP summary
+python soc_assist.py --log sample_inputs/sample_syslog.txt \
+                     --pcap sample_inputs/sample_pcap_summary.txt \
+                     --format both
+
+# Kill chain from one IOC  ← flagship feature
+python soc_assist.py --ioc 185.220.101.42 \
+                     --log sample_inputs/sample_syslog.txt \
+                     --format both
+
+# Service mode (watermarked PDF + usage log)
+python soc_assist.py --mode service \
+                     --customer-id CLIENT-001 \
+                     --log sample_inputs/high_risk.json
+```
+
+All outputs saved to `outputs/`.
+
+**CLI flags reference:**
+
+| Flag | Description |
+|---|---|
+| `--log PATH` | Syslog or JSON log file |
+| `--pcap PATH` | PCAP summary text file |
+| `--ioc VALUE` | Single IOC: IP, domain, file hash, or CVE ID |
+| `--format` | `pdf` \| `json` \| `both` (default: `pdf`) |
+| `--mode` | `tool` (default) \| `service` |
+| `--customer-id` | Required in `--mode service` |
+| `--output PATH` | Custom output base path |
+| `--offline` | Force offline mode (skip all API calls) |
+| `--config PATH` | Custom config.yaml path |
+
+### Web UI
+
+```bash
 streamlit run frontend/app.py
+```
 
+Open [http://localhost:8501](http://localhost:8501), upload a log from `sample_inputs/`, and download the generated report.
 
-Workflow:
+---
 
-Open the local URL shown by Streamlit.
+## Sample Inputs
 
-Upload a sample log from inputs/ (e.g., high_risk.json).
+Ready-to-run scenarios in `sample_inputs/`:
 
-Review LLM analysis, threat intel enrichment, and risk score.
+| File | Scenario |
+|---|---|
+| `high_risk.json` | RDP brute force → lateral movement → mimikatz + CVE-2023-23397 |
+| `zero_day.json` | Zero-day exfiltration via PowerShell + registry persistence |
+| `sysmon_log.json` | Windows Sysmon events — encoded PowerShell + regsvr32 living-off-the-land |
+| `sample_syslog.txt` | SSH brute force → C2 beacon → credential exfiltration |
+| `sample_pcap_summary.txt` | Matching PCAP for the syslog scenario |
 
-Generate/download the incident report.
+**Demo run:**
+```bash
+python soc_assist.py --ioc 185.220.101.42 \
+  --log sample_inputs/sample_syslog.txt \
+  --pcap sample_inputs/sample_pcap_summary.txt \
+  --format both
+```
 
-🧪 Quick CLI Tests (optional)
+---
 
-Test LLM backend
+## Project Structure
 
-python backend/test_llm.py
+```
+soc-ai-assistant/
+├── soc_assist.py              # CLI entrypoint
+├── config.yaml                # Central configuration
+├── requirements.txt
+├── installer.sh / .bat        # One-click setup
+├── backend/
+│   ├── pipeline.py            # Unified analysis pipeline
+│   ├── kill_chain.py          # IOC → kill chain reconstruction
+│   ├── llm_engine.py          # Ollama LLM interface
+│   ├── threat_intel.py        # IOC enrichment (AbuseIPDB, VT, NVD)
+│   ├── risk_scorer.py         # MITRE ATT&CK mapping + risk scoring
+│   ├── report_generator.py    # PDF generation
+│   ├── preprocessor.py        # Log normalization
+│   └── whitelist.py           # IOC whitelisting
+├── frontend/
+│   └── app.py                 # Streamlit web UI
+├── sample_inputs/             # Ready-to-run test scenarios
+└── outputs/                   # Generated reports (gitignored)
+```
 
+---
 
-Try example inputs
-Use files in backend/example_inputs/ and inputs/ within the Streamlit UI.
+## License
 
-🔒 Security & Best Practices
+**SOC AI Assistant Pro — Commercial License**
 
-Do not commit .env or any keys to Git.
+One license key = one seat. You may use this software for paid client work and internal SOC operations. Redistribution and resale are prohibited.
 
-Add to .gitignore:
+For multi-seat or enterprise/MSP licensing: agentmario1216@gmail.com
 
-.env
-__pycache__/
-*.pyc
-.venv/
+See [LICENSE](./LICENSE) for full terms.
 
+---
 
-If you accidentally committed secrets:
+## Disclaimer
 
-Rotate the keys in the provider dashboards.
-
-Remove from tracking: git rm --cached .env && git commit -m "Remove .env" && git push.
-
-(Advanced) Rewrite history with git filter-repo and force-push.
-
-🧭 Roadmap
-
-SIEM integrations (ELK, Splunk, QRadar)
-
-Real-time streaming / ingestion
-
-Richer visualizations & timelines
-
-Pluggable LLMs and offline modes
-
-🤝 Contributing
-
-Fork the repo
-
-Create a feature branch: git checkout -b feat/awesome-thing
-
-Commit your changes: git commit -m "Add awesome thing"
-
-Push and open a PR
-
-📜 License
-
-This project is licensed under the MIT License.
-
-🙌 Acknowledgements
-
-Streamlit
-
-AbuseIPDB, VirusTotal, NVD
-
-The broader cybersecurity & AI communities
-
-📣 Disclaimer
-
-This project is for educational and research purposes. Use responsibly and in accordance with all applicable laws and the terms of service of third-party APIs.
-
-## 📜 License
-
-This project is licensed under the **Creative Commons Attribution-NoDerivatives 4.0 International License (CC BY-ND 4.0)**.  
-You may use and share this project as-is, but you may not modify or redistribute it.  
-
-Full license text: [LICENSE](./LICENSE)
+This tool is intended for authorized security operations, incident response, and defensive research. Use only on systems and networks you own or have explicit written permission to test.

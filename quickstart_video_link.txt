@@ -1,0 +1,17 @@
+SOC AI Assistant Pro — Quickstart Video
+========================================
+
+Demo video link (Loom — unlisted):
+[PASTE YOUR LOOM URL HERE after recording]
+
+What the demo covers (2 minutes):
+  00:00 — Install in 60 seconds (installer.bat / installer.sh)
+  00:30 — Run kill chain reconstruction on one IP
+  01:10 — Open the generated PDF report
+  01:40 — Switch to service mode, generate watermarked report
+
+Recording checklist:
+  [ ] Use inputs/high_risk.json as the demo log
+  [ ] Show: python soc_assist.py --ioc 192.168.1.105 --log inputs/high_risk.json --format both
+  [ ] Open outputs/report_local.pdf on screen
+  [ ] Show risk score + MITRE section in the PDF

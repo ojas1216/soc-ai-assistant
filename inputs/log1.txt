@@ -1,7 +1,0 @@
-
-{
-    "timestamp": "2025-07-10 12:10:05",
-    "event": "PowerShell invoked with suspicious parameters: powershell.exe -enc aQBlAHgAIAAkAGgAbwBzAHQAOgAvAC8AMQA5ADIALgAxADYAOAAuADEALgAxADcAOgA4ADgAOAA4AA==",
-    "source_ip": "185.220.101.1",
-    "hash": "44d88612fea8a8f36de82e1278abb02f"
-}

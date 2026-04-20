@@ -1,0 +1,31 @@
+# SOC AI Assistant Pro — Configuration
+# Edit this file before your first run.
+version: "1.0"
+
+llm:
+  model: "mistral"                    # mistral | llama3 | llama2
+  host: "http://localhost:11434"      # Ollama server address
+  timeout: 120                        # seconds
+
+inputs:
+  log_folder: "./inputs/"
+  pcap_folder: "./inputs/"
+  output_folder: "./outputs/"
+
+output:
+  format: "pdf"                       # pdf | json | both
+  watermark: false                    # true in --mode service
+  customer_id: ""
+
+api_keys:
+  # Leave blank to run fully offline. Keys can also be set in .env
+  abuseipdb: ""
+  virustotal: ""
+  nvd: ""
+
+# When true, skips all external API calls (AbuseIPDB, VirusTotal, NVD).
+# Set false only when API keys are configured above.
+offline_mode: true
+
+license:
+  key_file: "./license.txt"
