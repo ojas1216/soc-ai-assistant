@@ -1,0 +1,122 @@
+{
+  "CVE-2023-23397": {
+    "description": "Microsoft Outlook elevation of privilege via crafted email — NTLM hash theft without user interaction",
+    "cvss": 9.8,
+    "severity": "CRITICAL",
+    "affected": "Microsoft Outlook",
+    "vector": "Network/No user interaction",
+    "patch": "KB5023453"
+  },
+  "CVE-2021-44228": {
+    "description": "Apache Log4j2 remote code execution (Log4Shell) — JNDI injection via log message",
+    "cvss": 10.0,
+    "severity": "CRITICAL",
+    "affected": "Apache Log4j 2.0-beta9 to 2.14.1",
+    "vector": "Network/No privileges required",
+    "patch": "Upgrade to Log4j 2.15.0+"
+  },
+  "CVE-2021-34527": {
+    "description": "Windows Print Spooler remote code execution (PrintNightmare)",
+    "cvss": 8.8,
+    "severity": "HIGH",
+    "affected": "Windows Print Spooler",
+    "vector": "Network/Low privileges",
+    "patch": "KB5004945"
+  },
+  "CVE-2020-1472": {
+    "description": "Netlogon elevation of privilege (Zerologon) — allows DC takeover via unauthenticated RPC",
+    "cvss": 10.0,
+    "severity": "CRITICAL",
+    "affected": "Windows Server 2008 R2 – 2019",
+    "vector": "Network/No privileges required",
+    "patch": "KB4557222"
+  },
+  "CVE-2019-0708": {
+    "description": "BlueKeep — Remote Desktop Services remote code execution without authentication",
+    "cvss": 9.8,
+    "severity": "CRITICAL",
+    "affected": "Windows XP, 7, Server 2003/2008",
+    "vector": "Network/No user interaction",
+    "patch": "KB4499175"
+  },
+  "CVE-2017-0144": {
+    "description": "EternalBlue — SMB remote code execution (exploited by WannaCry/NotPetya)",
+    "cvss": 8.1,
+    "severity": "HIGH",
+    "affected": "Windows SMBv1",
+    "vector": "Network/No privileges required",
+    "patch": "KB4012212"
+  },
+  "CVE-2022-30190": {
+    "description": "Microsoft Support Diagnostic Tool (MSDT) remote code execution (Follina)",
+    "cvss": 7.8,
+    "severity": "HIGH",
+    "affected": "Windows with Office",
+    "vector": "Local/User interaction required",
+    "patch": "KB5014697"
+  },
+  "CVE-2023-44487": {
+    "description": "HTTP/2 Rapid Reset Attack — allows DDoS amplification via RST_STREAM frames",
+    "cvss": 7.5,
+    "severity": "HIGH",
+    "affected": "HTTP/2 server implementations",
+    "vector": "Network/No privileges required",
+    "patch": "Vendor-specific patches"
+  },
+  "CVE-2021-21985": {
+    "description": "VMware vCenter Server remote code execution via vSAN Health Check plugin",
+    "cvss": 9.8,
+    "severity": "CRITICAL",
+    "affected": "VMware vCenter Server 6.5–7.0",
+    "vector": "Network/No privileges required",
+    "patch": "vCenter 7.0U2b"
+  },
+  "CVE-2022-22965": {
+    "description": "Spring4Shell — Spring Framework remote code execution via DataBinder",
+    "cvss": 9.8,
+    "severity": "CRITICAL",
+    "affected": "Spring Framework 5.3.0–5.3.17, 5.2.0–5.2.19",
+    "vector": "Network/No privileges required",
+    "patch": "Spring Framework 5.3.18+"
+  },
+  "CVE-2023-20198": {
+    "description": "Cisco IOS XE web UI privilege escalation — creates rogue admin account",
+    "cvss": 10.0,
+    "severity": "CRITICAL",
+    "affected": "Cisco IOS XE with Web UI",
+    "vector": "Network/No privileges required",
+    "patch": "Cisco Security Advisory cisco-sa-iosxe-webui-privesc"
+  },
+  "CVE-2024-3400": {
+    "description": "Palo Alto Networks PAN-OS command injection via GlobalProtect (OS command injection)",
+    "cvss": 10.0,
+    "severity": "CRITICAL",
+    "affected": "PAN-OS 10.2, 11.0, 11.1",
+    "vector": "Network/No privileges required",
+    "patch": "PAN-OS 10.2.9-h1, 11.0.4-h1, 11.1.2-h3"
+  },
+  "CVE-2023-34362": {
+    "description": "MOVEit Transfer SQL injection leading to remote code execution (Cl0p ransomware exploitation)",
+    "cvss": 9.8,
+    "severity": "CRITICAL",
+    "affected": "MOVEit Transfer all versions before 2023.0.1",
+    "vector": "Network/No privileges required",
+    "patch": "MOVEit Transfer 2023.0.1+"
+  },
+  "CVE-2021-40539": {
+    "description": "Zoho ManageEngine ADSelfService Plus authentication bypass and RCE",
+    "cvss": 9.8,
+    "severity": "CRITICAL",
+    "affected": "ManageEngine ADSelfService Plus < 6114",
+    "vector": "Network/No privileges required",
+    "patch": "Upgrade to build 6114"
+  },
+  "CVE-2022-26134": {
+    "description": "Confluence Server OGNL injection — unauthenticated RCE via OGNL expression",
+    "cvss": 9.8,
+    "severity": "CRITICAL",
+    "affected": "Confluence Server & Data Center 1.3.0–7.18.0",
+    "vector": "Network/No privileges required",
+    "patch": "Confluence 7.4.17, 7.13.7, 7.14.3, 7.15.2, 7.16.4, 7.17.4, 7.18.1"
+  }
+}

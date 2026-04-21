@@ -1,0 +1,242 @@
+---
+id: sigma-001
+title: PowerShell Encoded Command Execution
+status: stable
+description: Detects execution of encoded PowerShell commands
+level: high
+tags:
+    - attack.execution
+    - attack.t1059.001
+detection:
+    keywords:
+        - -EncodedCommand
+        - -enc
+        - FromBase64String
+        - Invoke-Expression
+        - IEX(
+    condition: keywords
+---
+id: sigma-002
+title: Credential Dump via LSASS
+status: stable
+description: Detects attempts to dump credentials from LSASS process
+level: critical
+tags:
+    - attack.credential_access
+    - attack.t1003.001
+detection:
+    keywords:
+        - lsass
+        - procdump
+        - comsvcs.dll
+        - MiniDump
+        - sekurlsa
+    condition: keywords
+---
+id: sigma-003
+title: Suspicious Scheduled Task Creation
+status: stable
+description: Detects creation of scheduled tasks for persistence
+level: medium
+tags:
+    - attack.persistence
+    - attack.t1053.005
+detection:
+    keywords:
+        - schtasks /create
+        - SchTasks.exe /Create
+        - Register-ScheduledTask
+    condition: keywords
+---
+id: sigma-004
+title: Windows Event Log Cleared
+status: stable
+description: Detects clearing of Windows event logs (defense evasion)
+level: high
+tags:
+    - attack.defense_evasion
+    - attack.t1070.001
+detection:
+    keywords:
+        - wevtutil cl
+        - Clear-EventLog
+        - Remove-EventLog
+        - Log Clear
+    condition: keywords
+---
+id: sigma-005
+title: Shadow Copy Deletion
+status: stable
+description: Detects deletion of volume shadow copies (ransomware precursor)
+level: critical
+tags:
+    - attack.impact
+    - attack.t1490
+detection:
+    keywords:
+        - vssadmin delete shadows
+        - wmic shadowcopy delete
+        - wbadmin delete catalog
+        - bcdedit /set
+    condition: keywords
+---
+id: sigma-006
+title: Lateral Movement via PsExec
+status: stable
+description: Detects remote execution via PsExec or similar tools
+level: high
+tags:
+    - attack.lateral_movement
+    - attack.t1021.002
+detection:
+    keywords:
+        - psexec
+        - wmiexec
+        - smbexec
+        - impacket
+        - PSEXESVC
+    condition: keywords
+---
+id: sigma-007
+title: Malicious Use of Certutil
+status: stable
+description: Detects certutil used for downloading or decoding files
+level: high
+tags:
+    - attack.defense_evasion
+    - attack.t1218.011
+detection:
+    keywords:
+        - certutil -decode
+        - certutil -urlcache
+        - certutil -f
+        - certutil.exe -decode
+    condition: keywords
+---
+id: sigma-008
+title: Suspicious Regsvr32 Network Connection
+status: stable
+description: Detects regsvr32 loading scripts from remote locations
+level: high
+tags:
+    - attack.defense_evasion
+    - attack.t1218.010
+detection:
+    keywords:
+        - regsvr32 /s /u /i:http
+        - regsvr32 /s /n /u
+        - scrobj.dll
+    condition: keywords
+---
+id: sigma-009
+title: SSH Brute Force
+status: stable
+description: Detects multiple failed SSH authentication attempts
+level: medium
+tags:
+    - attack.credential_access
+    - attack.t1110.001
+detection:
+    keywords:
+        - Failed password
+        - authentication failure
+        - Invalid user
+        - Connection closed by authenticating user
+    condition: keywords
+---
+id: sigma-010
+title: DNS Tunneling Indicators
+status: experimental
+description: Detects potential DNS tunneling activity
+level: high
+tags:
+    - attack.exfiltration
+    - attack.t1048.003
+detection:
+    keywords:
+        - iodine
+        - dnscat
+        - dns2tcp
+        - TXT record
+    condition: keywords
+---
+id: sigma-011
+title: Mshta Remote Script Execution
+status: stable
+description: Detects mshta executing remote HTA scripts
+level: high
+tags:
+    - attack.defense_evasion
+    - attack.t1218.005
+detection:
+    keywords:
+        - mshta http
+        - mshta vbscript
+        - mshta javascript
+    condition: keywords
+---
+id: sigma-012
+title: New User Account Created
+status: stable
+description: Detects creation of new user accounts (possible backdoor)
+level: medium
+tags:
+    - attack.persistence
+    - attack.t1136.001
+detection:
+    keywords:
+        - net user /add
+        - useradd
+        - New-LocalUser
+        - Add-LocalGroupMember Administrators
+    condition: keywords
+---
+id: sigma-013
+title: Base64 Encoded Payload in URL
+status: experimental
+description: Detects base64 encoded content in URLs (common C2 pattern)
+level: medium
+tags:
+    - attack.command_and_control
+    - attack.t1132.001
+detection:
+    keywords:
+        - ?cmd=
+        - ?exec=
+        - base64,
+        - data:text/html;base64
+    condition: keywords
+---
+id: sigma-014
+title: Privilege Escalation via Token Impersonation
+status: stable
+description: Detects token impersonation for privilege escalation
+level: high
+tags:
+    - attack.privilege_escalation
+    - attack.t1134
+detection:
+    keywords:
+        - token impersonation
+        - ImpersonateLoggedOnUser
+        - getsystem
+        - bypassuac
+        - eventvwr.exe
+    condition: keywords
+---
+id: sigma-015
+title: Outbound Connection to Known C2 Ports
+status: experimental
+description: Detects outbound connections to common C2 ports
+level: high
+tags:
+    - attack.command_and_control
+    - attack.t1071
+detection:
+    keywords:
+        - ":4444"
+        - ":9001"
+        - ":1337"
+        - ":31337"
+        - ":5555"
+    condition: keywords

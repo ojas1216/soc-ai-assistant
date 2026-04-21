@@ -2,8 +2,7 @@
 
 **Turns 4 hours of log correlation into 4 minutes. 100% offline. Air-gap safe.**
 
-> Give it one suspicious IP, a log file, or a PCAP summary.  
-> Get back a full kill chain reconstruction, MITRE ATT&CK mapping, and a 3-step containment plan — in a single PDF.
+> Feed it a suspicious IP, a log file, or a PCAP — get back a full kill chain, MITRE ATT&CK heatmap, auto-generated YARA rules, and a PDF incident report. No cloud. No Ollama. No API keys required.
 
 [![Demo Video](https://img.shields.io/badge/Watch-Demo%20Video-red?logo=google-drive)](https://drive.google.com/file/d/1sH6hOsyFiEVD1jhPGRnBkK16AAegsiSj/view?usp=sharing)
 [![License](https://img.shields.io/badge/License-Commercial-blue)](#license)
@@ -14,175 +13,211 @@
 
 ## The Problem This Solves
 
-SOC teams lose 70% of their time switching between tools — checking logs in one window, PCAP in another, CVEs in a browser tab, MITRE ATT&CK in a fourth. By the time correlation happens, the attacker has moved laterally.
+SOC teams lose 70% of their time switching between tools — logs in one window, PCAP in another, CVEs in a browser, MITRE ATT&CK in a fourth. By the time manual correlation happens, the attacker has moved laterally.
 
 SOC AI Assistant Pro collapses that entire workflow into one command.
 
 ---
 
-## Features
+## What's New in v2.0
 
-| Feature | Description |
-|---|---|
-| **Kill Chain Reconstruction** | Feed one IOC (IP / hash / CVE) → auto-pivot across logs + PCAP → full attack timeline |
-| **MITRE ATT&CK Mapping** | Automatic technique detection across all 14 kill chain stages |
-| **LLM Threat Analysis** | Local AI (Ollama) generates incident summaries and remediation — no cloud, no data leakage |
-| **Threat Intel Enrichment** | Optional AbuseIPDB, VirusTotal, NVD lookups (or run fully offline) |
-| **PDF + JSON Reports** | Executive-ready PDF with risk score, MITRE techniques, and 3-step remediation |
-| **Service Mode** | Watermarked reports + usage logging for MSPs and enterprise billing |
-| **Streamlit Web UI** | Browser-based upload and analysis interface |
-| **Air-gap Safe** | Core analysis runs with zero internet connectivity |
+| Upgrade | v1 | v2 |
+|---|---|---|
+| Threat detection | Single LLM call | **5-algorithm ML ensemble** |
+| Zero-day coverage | None | **6 orthogonal anomaly methods** |
+| LLM dependency | Ollama required | **Zero — fully embedded models** |
+| Frontend | CLI only | **Cyberpunk web UI (Flask)** |
+| YARA rules | None | **15 production rules + auto-generation** |
+| License | Open-source | **Commercial RSA-signed** |
 
 ---
 
-## Requirements
+## Features
 
-| Requirement | Version | Notes |
+### 5-Algorithm ML Ensemble
+| Algorithm | Weight | Role |
 |---|---|---|
-| Python | 3.9+ | [python.org](https://python.org) |
-| Ollama | Latest | [ollama.com/download](https://ollama.com/download) |
-| LLM Model | — | Run `ollama pull mistral` after installing Ollama |
-| RAM | 8 GB min | 16 GB recommended for `llama3` |
+| BERT / DistilBERT | 25% | Semantic understanding of log content |
+| Isolation Forest | 20% | Statistical anomaly detection on 20 log features |
+| LSTM Predictor | 20% | Sequential event pattern surprise scoring |
+| MLP Autoencoder | 20% | Reconstruction-error anomaly detection |
+| One-Class SVM | 15% | Boundary-based novelty scoring |
+
+Weighted confidence voting: `adj_weight = weight × (0.5 + confidence × 0.5)`. Alert threshold: 75/100.
+
+### Zero-Day Detection (6 Methods)
+1. **Statistical Baseline** — Z-score deviation from trained distribution
+2. **Embedding Clustering** — Cosine distance from known-good centroids
+3. **Entropy Analysis** — Shannon entropy + high-entropy token detection
+4. **Temporal Sequence** — N-gram transition surprise scoring
+5. **Packet Timing** — Beaconing detection via CV of inter-arrival times
+6. **Protocol Violation** — State-machine regex checks (DNS C2, ICMP tunneling, etc.)
+
+Auto-generates YARA hunting rules and Splunk/KQL/grep queries for every detection.
+
+### Rules & Intelligence
+- **15 YARA rules** — Mimikatz, Cobalt Strike, PowerShell obfuscation, ransomware, LOLBins, web shells
+- **15 Sigma rules** — Mapped to detection logic
+- **15 critical CVEs** — Log4Shell (CVSS 10.0), Zerologon, ProxyShell, etc.
+- **40+ MITRE ATT&CK techniques** — Automatic technique ID mapping
+
+### Kill Chain Reconstruction
+Feed one IOC (IP / hash / CVE) → auto-pivot across logs + PCAP → full attack timeline with MITRE ATT&CK stage labels.
+
+### Web UI
+Cyberpunk dark-theme Flask interface: real-time analysis terminal, interactive MITRE heatmap (D3.js), risk gauge, one-click PDF/JSON/CSV export. No Node.js or build step required.
+
+### PDF Reports
+Professional PDF with dark cyberpunk theme — risk banner, ML score table, zero-day intelligence, MITRE technique table, kill chain timeline, remediation checklist.
 
 ---
 
 ## Installation
 
-### Option 1 — Automated (recommended)
+### Requirements
+- Python 3.9+
+- 4 GB RAM minimum (8 GB recommended)
+- 500 MB disk space (+ ~250 MB for DistilBERT weights on first run)
 
-**Linux / macOS:**
+### Linux / macOS
+
 ```bash
-git clone https://github.com/ojas1216/soc-ai-assistant.git
+git clone https://github.com/Mario121625/soc-ai-assistant.git
 cd soc-ai-assistant
-bash installer.sh
+chmod +x installer.sh
+./installer.sh
 ```
 
-**Windows:**
+Optionally compile a standalone binary:
+```bash
+./installer.sh --compile
 ```
-git clone https://github.com/ojas1216/soc-ai-assistant.git
+
+### Windows
+
+```bat
+git clone https://github.com/Mario121625/soc-ai-assistant.git
 cd soc-ai-assistant
 installer.bat
 ```
 
-### Option 2 — Manual
+### Manual Installation
 
 ```bash
-# 1. Clone
-git clone https://github.com/ojas1216/soc-ai-assistant.git
-cd soc-ai-assistant
-
-# 2. Create and activate virtual environment
 python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-# Windows
-.venv\Scripts\activate
+---
 
-# macOS / Linux
+## Usage
+
+### Web UI (Recommended)
+
+```bash
+source .venv/bin/activate
+python soc_assist.py --ui
+```
+
+Open **http://127.0.0.1:5000** — drag and drop logs or PCAPs, enter an IOC, watch the real-time terminal feed, and export your report.
+
+### CLI — Quick Start
+
+```bash
+# Activate environment
 source .venv/bin/activate
 
-# 3. Install dependencies
-pip install -r requirements.txt
+# Analyze a log file (JSON report)
+python soc_assist.py --log sample_inputs/sample_syslog.txt
 
-# 4. Pull the LLM model (requires Ollama running)
-ollama pull mistral
-
-# 5. Configure
-cp .env.example .env    # then edit .env with your API keys (optional)
-```
-
----
-
-## Configuration
-
-Edit `config.yaml` before first run:
-
-```yaml
-llm:
-  model: "mistral"        # or llama3 for higher accuracy
-
-offline_mode: true        # set false to enable AbuseIPDB / VirusTotal enrichment
-```
-
-For threat intel enrichment, add your API keys to `.env`:
-
-```env
-ABUSEIPDB_API_KEY=your_key_here
-VT_API_KEY=your_key_here
-NVD_API_KEY=your_key_here
-```
-
-Free keys: [AbuseIPDB](https://www.abuseipdb.com/) · [VirusTotal](https://www.virustotal.com/gui/join-us) · [NVD](https://nvd.nist.gov/developers/request-an-api-key)
-
----
-
-## Running the Tool
-
-### CLI (recommended)
-
-```bash
-# Analyze a log file — outputs PDF report
-python soc_assist.py --log sample_inputs/high_risk.json
-
-# Full correlation: log + PCAP summary
-python soc_assist.py --log sample_inputs/sample_syslog.txt \
-                     --pcap sample_inputs/sample_pcap_summary.txt \
-                     --format both
-
-# Kill chain from one IOC  ← flagship feature
-python soc_assist.py --ioc 185.220.101.42 \
-                     --log sample_inputs/sample_syslog.txt \
-                     --format both
-
-# Service mode (watermarked PDF + usage log)
-python soc_assist.py --mode service \
-                     --customer-id CLIENT-001 \
-                     --log sample_inputs/high_risk.json
-```
-
-All outputs saved to `outputs/`.
-
-**CLI flags reference:**
-
-| Flag | Description |
-|---|---|
-| `--log PATH` | Syslog or JSON log file |
-| `--pcap PATH` | PCAP summary text file |
-| `--ioc VALUE` | Single IOC: IP, domain, file hash, or CVE ID |
-| `--format` | `pdf` \| `json` \| `both` (default: `pdf`) |
-| `--mode` | `tool` (default) \| `service` |
-| `--customer-id` | Required in `--mode service` |
-| `--output PATH` | Custom output base path |
-| `--offline` | Force offline mode (skip all API calls) |
-| `--config PATH` | Custom config.yaml path |
-
-### Web UI
-
-```bash
-streamlit run frontend/app.py
-```
-
-Open [http://localhost:8501](http://localhost:8501), upload a log from `sample_inputs/`, and download the generated report.
-
----
-
-## Sample Inputs
-
-Ready-to-run scenarios in `sample_inputs/`:
-
-| File | Scenario |
-|---|---|
-| `high_risk.json` | RDP brute force → lateral movement → mimikatz + CVE-2023-23397 |
-| `zero_day.json` | Zero-day exfiltration via PowerShell + registry persistence |
-| `sysmon_log.json` | Windows Sysmon events — encoded PowerShell + regsvr32 living-off-the-land |
-| `sample_syslog.txt` | SSH brute force → C2 beacon → credential exfiltration |
-| `sample_pcap_summary.txt` | Matching PCAP for the syslog scenario |
-
-**Demo run:**
-```bash
-python soc_assist.py --ioc 185.220.101.42 \
+# Full analysis — log + PCAP → PDF + JSON
+python soc_assist.py \
   --log sample_inputs/sample_syslog.txt \
   --pcap sample_inputs/sample_pcap_summary.txt \
   --format both
+
+# Kill chain from a single IOC
+python soc_assist.py --ioc 185.220.101.42 --log sample_inputs/sample_syslog.txt
+
+# Service mode — watermarked PDF for a client
+python soc_assist.py \
+  --mode service \
+  --customer-id ACME-001 \
+  --log /path/to/client_logs.txt \
+  --format pdf
+```
+
+### CLI Flag Reference
+
+| Flag | Description |
+|---|---|
+| `--log FILE` | Syslog / JSON / CSV / EVTX / TXT log file |
+| `--pcap FILE` | PCAP or PCAP summary text file |
+| `--ioc VALUE` | Single IOC: IPv4, domain, MD5/SHA1/SHA256, CVE-ID |
+| `--format` | `json` (default) · `pdf` · `both` |
+| `--output PATH` | Output base path (default: `./outputs/report_<timestamp>`) |
+| `--mode` | `tool` (single user) · `service` (watermarked + usage log) |
+| `--customer-id ID` | Required with `--mode service` |
+| `--ui` | Launch Flask web UI |
+| `--ui-port N` | Web UI port (default: 5000) |
+| `--train` | Train ML models before analysis |
+| `--train-data DIR` | Baseline log folder for training (default: `./baseline_logs/`) |
+| `--hardware-id` | Print this machine's hardware fingerprint and exit |
+| `--no-license` | Skip license check (demo mode) |
+| `--config FILE` | Path to `config.yaml` (default: `./config.yaml`) |
+
+---
+
+## Training the ML Models
+
+For best detection accuracy, train the ensemble on your environment's baseline logs:
+
+```bash
+# 1. Add representative benign logs to baseline_logs/
+#    (at least 50-100 log files recommended)
+mkdir -p baseline_logs
+cp /var/log/syslog baseline_logs/syslog_$(date +%Y%m%d).log
+# ... add more logs
+
+# 2. Train
+python soc_assist.py --train --train-data ./baseline_logs/
+
+# Or directly:
+python -m src.models.train_ensemble --data ./baseline_logs/
+```
+
+Without training, all 5 models fall back to robust statistical heuristics — the tool works immediately out of the box.
+
+---
+
+## Supported Input Formats
+
+| Format | Description |
+|---|---|
+| Syslog | Standard `RFC 3164` / `RFC 5424` syslog |
+| JSON / NDJSON | Structured log events (field-name auto-mapping) |
+| CSV | Tabular logs with header detection |
+| CEF | ArcSight Common Event Format |
+| EVTX / XML | Windows Event Log (text summary) |
+| PCAP / CAP | Binary packet captures (via Scapy) |
+| PCAP summary | Text-format PCAP summaries |
+
+---
+
+## Running Tests
+
+```bash
+source .venv/bin/activate
+
+# Full test suite
+python -m pytest tests/ -v
+
+# Individual test files
+python -m pytest tests/test_zero_day_simulator.py -v
+python -m pytest tests/test_license.py -v
+python -m pytest tests/test_security.py -v
+python -m pytest tests/test_performance.py -v
 ```
 
 ---
@@ -192,38 +227,77 @@ python soc_assist.py --ioc 185.220.101.42 \
 ```
 soc-ai-assistant/
 ├── soc_assist.py              # CLI entrypoint
-├── config.yaml                # Central configuration
+├── installer.sh / .bat        # Setup scripts
 ├── requirements.txt
-├── installer.sh / .bat        # One-click setup
-├── backend/
-│   ├── pipeline.py            # Unified analysis pipeline
-│   ├── kill_chain.py          # IOC → kill chain reconstruction
-│   ├── llm_engine.py          # Ollama LLM interface
-│   ├── threat_intel.py        # IOC enrichment (AbuseIPDB, VT, NVD)
-│   ├── risk_scorer.py         # MITRE ATT&CK mapping + risk scoring
-│   ├── report_generator.py    # PDF generation
-│   ├── preprocessor.py        # Log normalization
-│   └── whitelist.py           # IOC whitelisting
-├── frontend/
-│   └── app.py                 # Streamlit web UI
-├── sample_inputs/             # Ready-to-run test scenarios
-└── outputs/                   # Generated reports (gitignored)
+├── config.yaml                # Central configuration
+├── license.txt                # Your license key (not in git)
+├── sample_inputs/             # Example logs and PCAP summaries
+│
+├── src/
+│   ├── models/                # 5 ML algorithms + voting + training
+│   │   ├── bert_analyzer.py
+│   │   ├── isolation_forest_model.py
+│   │   ├── lstm_predictor.py
+│   │   ├── autoencoder_model.py
+│   │   ├── one_class_svm.py
+│   │   ├── voting_classifier.py
+│   │   └── train_ensemble.py
+│   │
+│   ├── core/                  # Orchestration engines
+│   │   ├── inference_engine.py
+│   │   ├── ensemble_detector.py
+│   │   ├── zero_day_detector.py
+│   │   └── existing_threat_detector.py
+│   │
+│   ├── security/              # License, anti-tamper, input validation
+│   │   ├── license_manager.py
+│   │   ├── anti_tamper.py
+│   │   ├── secure_delete.py
+│   │   └── input_sanitizer.py
+│   │
+│   ├── utils/                 # Parsers, report generator, entropy
+│   │   ├── log_parser.py
+│   │   ├── pcap_parser.py
+│   │   ├── report_generator.py
+│   │   └── entropy_calculator.py
+│   │
+│   ├── rules/                 # Detection rules
+│   │   ├── yara/threats.yar
+│   │   ├── sigma/sigma_rules.yml
+│   │   ├── cve_db.json
+│   │   └── mitre_mapping.json
+│   │
+│   └── frontend/              # Flask web UI
+│       ├── app.py
+│       ├── templates/index.html
+│       └── static/ (app.js, style.css)
+│
+└── tests/
+    ├── test_zero_day_simulator.py
+    ├── test_license.py
+    ├── test_security.py
+    └── test_performance.py
 ```
+
+---
+
+## Pricing
+
+| Product | Price | What's Included |
+|---|---|---|
+| **Tool License** | $49 one-time | CLI + Web UI, unlimited analyses, 1 machine |
+| **Report Service** | $299/report | You send logs, we deliver a PDF incident report within 24h |
+| **Enterprise** | Contact | Multi-seat, custom YARA/Sigma rules, priority support |
+
+Purchase at [Gumroad](#) → Enter license key in `license.txt` → Done.
 
 ---
 
 ## License
 
-**SOC AI Assistant Pro — Commercial License**
+**Commercial License — Single User**
 
-One license key = one seat. You may use this software for paid client work and internal SOC operations. Redistribution and resale are prohibited.
+This software is proprietary. Purchase of a license grants a single non-transferable right to use this software on one machine. Redistribution, resale, reverse engineering, and sublicensing are prohibited.
 
-For multi-seat or enterprise/MSP licensing: agentmario1216@gmail.com
-
-See [LICENSE](./LICENSE) for full terms.
-
----
-
-## Disclaimer
-
-This tool is intended for authorized security operations, incident response, and defensive research. Use only on systems and networks you own or have explicit written permission to test.
+© 2025 ojas1216 / Mario121625 — All rights reserved  
+Contact: agentmario1216@gmail.com

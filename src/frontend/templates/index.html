@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOC AI Assistant Pro</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body>
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">SOC AI <span class="accent">PRO</span></span>
+    </div>
+    <nav class="nav-pills">
+      <span class="pill pill--active" onclick="showTab('analyze')">Analyze</span>
+      <span class="pill" onclick="showTab('reports')">Reports</span>
+      <span class="pill" onclick="showTab('mitre')">MITRE Map</span>
+      <span class="pill" onclick="showTab('about')">About</span>
+    </nav>
+    <div class="status-bar">
+      <span class="dot" id="engine-dot"></span>
+      <span id="engine-status" class="status-text">Checking...</span>
+      <span class="tier-badge">{{ license_tier | upper }}</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════ ZERO-DAY ALERT BANNER ═══════════════════ -->
+<div class="alert-banner" id="zd-alert-banner" style="display:none">
+  <span class="alert-icon">⚠</span>
+  <span id="zd-alert-text">ZERO-DAY THREAT DETECTED</span>
+  <button class="alert-close" onclick="document.getElementById('zd-alert-banner').style.display='none'">×</button>
+</div>
+
+<!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
+<main class="main">
+
+  <!-- ── ANALYZE TAB ────────────────────────────────────────────── -->
+  <section id="tab-analyze" class="tab active">
+
+    <!-- Upload zone -->
+    <div class="card upload-card" id="drop-zone">
+      <div class="upload-icon">⬆</div>
+      <h2 class="upload-title">Drop Files to Analyze</h2>
+      <p class="upload-sub">PCAP · LOG · JSON · CSV · EVTX · TXT</p>
+      <div class="upload-buttons">
+        <label class="btn btn--primary">
+          Upload Log File
+          <input type="file" id="log-file" accept=".log,.txt,.json,.csv,.evtx,.xml" hidden onchange="handleFileSelect(this,'log')">
+        </label>
+        <label class="btn btn--secondary">
+          Upload PCAP
+          <input type="file" id="pcap-file" accept=".pcap,.cap,.pcapng,.txt" hidden onchange="handleFileSelect(this,'pcap')">
+        </label>
+      </div>
+      <div class="ioc-row">
+        <input id="ioc-input" class="ioc-field" type="text" placeholder="Or enter a single IOC: IP · domain · hash · CVE-ID">
+        <select id="fmt-select" class="select-field">
+          <option value="json">JSON</option>
+          <option value="pdf">PDF</option>
+          <option value="both">Both</option>
+        </select>
+        <button class="btn btn--run" id="run-btn" onclick="runAnalysis()">RUN ANALYSIS</button>
+      </div>
+      <div class="file-status" id="file-status"></div>
+    </div>
+
+    <!-- Terminal feed -->
+    <div class="card terminal-card" id="terminal-card" style="display:none">
+      <div class="terminal-header">
+        <span class="terminal-title">▶ ANALYSIS TERMINAL</span>
+        <span class="terminal-spinner" id="spinner">⣾</span>
+      </div>
+      <div class="terminal-body" id="terminal-body"></div>
+    </div>
+
+    <!-- Results dashboard -->
+    <div id="results-section" style="display:none">
+
+      <!-- Risk score banner -->
+      <div class="risk-banner" id="risk-banner">
+        <div class="risk-left">
+          <div class="risk-level" id="risk-level-label">—</div>
+          <div class="risk-sublabel">Composite Threat Score</div>
+        </div>
+        <div class="risk-gauge-wrap">
+          <canvas id="risk-gauge" width="160" height="80"></canvas>
+        </div>
+        <div class="risk-right" id="risk-scores-detail"></div>
+      </div>
+
+      <!-- Tabs for result sections -->
+      <div class="result-tabs">
+        <span class="rtab active" onclick="showResult('executive')">Executive</span>
+        <span class="rtab" onclick="showResult('zeroday')">Zero-Day</span>
+        <span class="rtab" onclick="showResult('technical')">Technical</span>
+        <span class="rtab" onclick="showResult('mitre-res')">MITRE</span>
+        <span class="rtab" onclick="showResult('remediation')">Remediation</span>
+        <span class="rtab" onclick="showResult('json-raw')">Raw JSON</span>
+      </div>
+
+      <div id="res-executive" class="res-panel active card"></div>
+      <div id="res-zeroday"   class="res-panel card"></div>
+      <div id="res-technical" class="res-panel card"></div>
+      <div id="res-mitre-res" class="res-panel card"></div>
+      <div id="res-remediation" class="res-panel card"></div>
+      <div id="res-json-raw"  class="res-panel card"><pre id="json-pre" class="json-dump"></pre></div>
+
+      <!-- Attack timeline -->
+      <div class="card" id="timeline-card" style="display:none">
+        <h3 class="card-title">ATTACK TIMELINE</h3>
+        <canvas id="timeline-chart" height="80"></canvas>
+      </div>
+
+      <!-- Export bar -->
+      <div class="export-bar">
+        <button class="btn btn--secondary" onclick="exportPDF()">⬇ Export PDF</button>
+        <button class="btn btn--secondary" onclick="exportJSON()">⬇ Export JSON</button>
+        <button class="btn btn--secondary" onclick="exportCSV()">⬇ Export CSV</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── REPORTS TAB ────────────────────────────────────────────── -->
+  <section id="tab-reports" class="tab">
+    <div class="card">
+      <h2 class="card-title">Recent Reports</h2>
+      <p class="muted">Reports generated this session appear here.</p>
+      <div id="reports-list" class="reports-list"></div>
+    </div>
+  </section>
+
+  <!-- ── MITRE HEATMAP TAB ──────────────────────────────────────── -->
+  <section id="tab-mitre" class="tab">
+    <div class="card">
+      <h2 class="card-title">MITRE ATT&CK HEATMAP</h2>
+      <p class="muted">Run an analysis to populate detections.</p>
+      <div id="mitre-heatmap" class="mitre-heatmap"></div>
+    </div>
+  </section>
+
+  <!-- ── ABOUT TAB ──────────────────────────────────────────────── -->
+  <section id="tab-about" class="tab">
+    <div class="card about-card">
+      <h2 class="card-title">SOC AI ASSISTANT PRO v2.0</h2>
+      <p class="about-text">
+        5-algorithm ensemble AI (BERT + Isolation Forest + LSTM + Autoencoder + One-Class SVM).<br>
+        Zero-day detection via 6 orthogonal anomaly methods.<br>
+        100% offline. Air-gap safe. Commercial license.
+      </p>
+      <div class="about-grid">
+        <div class="about-stat"><span class="stat-n">5</span><span class="stat-l">ML Algorithms</span></div>
+        <div class="about-stat"><span class="stat-n">6</span><span class="stat-l">Zero-Day Methods</span></div>
+        <div class="about-stat"><span class="stat-n">15+</span><span class="stat-l">YARA Rules</span></div>
+        <div class="about-stat"><span class="stat-n">40+</span><span class="stat-l">MITRE Techniques</span></div>
+      </div>
+      <p class="license-info">License tier: <strong id="about-tier">{{ license_tier | upper }}</strong></p>
+      <p class="muted">© 2025 ojas1216 — Commercial License — agentmario1216@gmail.com</p>
+    </div>
+  </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
